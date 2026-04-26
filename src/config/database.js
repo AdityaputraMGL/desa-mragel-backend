@@ -9,6 +9,13 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST || "localhost",
     dialect: "mysql",
+    // 👇 INI KUNCI SAKTINYA BANG 👇
+    dialectOptions: {
+      ssl: {
+        rejectUnauthorized: true,
+      },
+    },
+    // 👆 SAMPAI SINI 👆
     logging: false,
     pool: {
       max: 5,
