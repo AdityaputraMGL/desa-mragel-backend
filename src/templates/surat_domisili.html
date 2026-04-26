@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Surat Keterangan</title>
+    <style>
+      /* Reset padding body karena margin sudah diatur oleh Puppeteer (2cm) */
+      body {
+        font-family: "Times New Roman", serif;
+        padding: 0;
+        margin: 0;
+        line-height: 1.5; /* Sedikit dirapatkan dari 1.6 */
+        font-size: 12pt;
+      }
+
+      /* Header / Kop Surat */
+      .header {
+        text-align: center;
+        border-bottom: 3px double black;
+        padding-bottom: 10px;
+        margin-bottom: 20px; /* Dikurangi dari 30px */
+      }
+      .header h3,
+      .header h2 {
+        margin: 0;
+      }
+      .header p {
+        margin: 2px 0 0 0;
+      }
+
+      /* Judul Surat */
+      .judul {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .judul h3 {
+        text-decoration: underline;
+        margin: 0 0 5px 0;
+      }
+      .judul p {
+        margin: 0;
+      }
+
+      /* Isi Surat */
+      .content {
+        margin-top: 10px;
+      }
+
+      /* Tabel Data */
+      table {
+        width: 100%;
+        margin: 10px 0 20px 0;
+        border-collapse: collapse;
+      }
+      table td {
+        padding: 3px 0; /* Jarak antar baris tabel dirapatkan */
+        vertical-align: top;
+      }
+
+      /* Tanda Tangan */
+      .ttd {
+        float: right;
+        width: 250px;
+        text-align: center;
+        margin-top: 30px; /* Dikurangi dari 50px */
+
+        /* Trik agar tanda tangan tidak loncat ke halaman baru */
+        page-break-inside: avoid;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>PEMERINTAH KABUPATEN LAMONGAN</h3>
+      <h3>KECAMATAN SUKORAME</h3>
+      <h2>DESA MRAGEL</h2>
+      <p>Jl. Raya Mragel No. 123, Kode Pos 62276</p>
+    </div>
+
+    <div class="judul">
+      <h3>SURAT KETERANGAN</h3>
+      <p>Nomor: 470 / {{nomor_surat}} / 413.XXX / {{tahun}}</p>
+    </div>
+
+    <div class="content">
+      <p>
+        Yang bertanda tangan di bawah ini Kepala Desa Mragel, Kecamatan
+        Sukorame, Kabupaten Lamongan, menerangkan bahwa:
+      </p>
+
+      <table>
+        <tr>
+          <td width="160">Nama Lengkap</td>
+          <td>: <b>{{nama_lengkap}}</b></td>
+        </tr>
+        <tr>
+          <td>NIK</td>
+          <td>: {{nik}}</td>
+        </tr>
+        <tr>
+          <td>Tempat/Tgl Lahir</td>
+          <td>: {{tempat_lahir}}, {{tanggal_lahir}}</td>
+        </tr>
+        <tr>
+          <td>Jenis Kelamin</td>
+          <td>: {{jenis_kelamin}}</td>
+        </tr>
+        <tr>
+          <td>Pekerjaan</td>
+          <td>: {{pekerjaan}}</td>
+        </tr>
+        <tr>
+          <td>Alamat</td>
+          <td>: {{alamat}}</td>
+        </tr>
+      </table>
+
+      <p>
+        Orang tersebut di atas adalah benar-benar penduduk yang berdomisili di
+        Desa Mragel, Kecamatan Sukorame, Kabupaten Lamongan.
+      </p>
+      <p>
+        Demikian surat keterangan ini dibuat untuk dapat dipergunakan
+        sebagaimana mestinya.
+      </p>
+    </div>
+
+    <div class="ttd">
+      <p>Mragel, {{tanggal_cetak}}</p>
+      <p>Kepala Desa Mragel</p>
+
+      <div
+        style="
+          height: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin: 10px 0;
+        "
+      >
+        {{#if show_ttd}}
+        <img
+          src="{{ttd_image}}"
+          style="max-width: 100%; max-height: 100px; object-fit: contain"
+          alt="Tanda Tangan Kepala Desa"
+        />
+        {{else}}
+        <br /><br /><br /><br />
+        {{/if}}
+      </div>
+
+      <p style="font-weight: bold; text-decoration: underline">
+        ( {{nama_kades}} )
+      </p>
+      <p>NIP. {{nip_kades}}</p>
+    </div>
+  </body>
+</html>
