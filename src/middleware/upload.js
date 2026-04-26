@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs");
 
 // 👇 FIX TERAKHIR: Tambahkan kata "public/" di depan semua nama foldernya 👇
-const uploadDirs = [
+/*const uploadDirs = [
   "public/uploads/surat",
   "public/uploads/pengaduan",
   "public/uploads/berita",
@@ -16,7 +16,7 @@ uploadDirs.forEach((dir) => {
     fs.mkdirSync(fullPath, { recursive: true });
     console.log(`📁 Created directory: ${dir}`);
   }
-});
+});*/
 
 // Storage configuration
 const storage = multer.diskStorage({

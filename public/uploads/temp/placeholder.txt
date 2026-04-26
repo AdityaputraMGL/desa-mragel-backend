@@ -1,0 +1,1 @@
+File pancingan agar folder temp terbaca oleh Git.

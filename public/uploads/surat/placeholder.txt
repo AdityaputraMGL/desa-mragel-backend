@@ -1,0 +1,1 @@
+File pancingan agar folder surat terbaca oleh Git.
