@@ -79,4 +79,6 @@ router.delete(
 // Get Detail Pengajuan by ID
 router.get("/:id", verifyToken, pengajuanController.getPengajuanById);
 
+router.get("/:id/download", verifyToken, pengajuanController.downloadFile);
+
 module.exports = router;

@@ -623,3 +623,30 @@ exports.cetakSurat = async (req, res) => {
     });
   }
 };
+
+// 11. Download File Hasil (Proxy dari Cloudinary)
+exports.downloadFile = async (req, res) => {
+  try {
+    const axios = require("axios");
+    const { id } = req.params;
+    const pengajuan = await PengajuanSurat.findByPk(id);
+
+    if (!pengajuan || !pengajuan.file_hasil) {
+      return res.status(404).json({ message: "File tidak ditemukan" });
+    }
+
+    const fileUrl = pengajuan.file_hasil;
+    const response = await axios.get(fileUrl, { responseType: "stream" });
+
+    const ext = fileUrl.split(".").pop().split("?")[0] || "jpg";
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=Surat-${id}.${ext}`,
+    );
+    res.setHeader("Content-Type", response.headers["content-type"]);
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Error downloadFile:", error);
+    res.status(500).json({ message: "Gagal download file" });
+  }
+};
