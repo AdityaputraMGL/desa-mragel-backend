@@ -623,11 +623,9 @@ exports.cetakSurat = async (req, res) => {
     });
   }
 };
-
-// 11. Download File Hasil (Proxy dari Cloudinary)
+// 11. Download File Hasil (Pakai fetch, tanpa axios)
 exports.downloadFile = async (req, res) => {
   try {
-    const axios = require("axios");
     const { id } = req.params;
     const pengajuan = await PengajuanSurat.findByPk(id);
 
@@ -636,15 +634,26 @@ exports.downloadFile = async (req, res) => {
     }
 
     const fileUrl = pengajuan.file_hasil;
-    const response = await axios.get(fileUrl, { responseType: "stream" });
+    const response = await fetch(fileUrl);
+
+    if (!response.ok) {
+      return res
+        .status(500)
+        .json({ message: "Gagal mengambil file dari server" });
+    }
 
     const ext = fileUrl.split(".").pop().split("?")[0] || "jpg";
     res.setHeader(
       "Content-Disposition",
       `attachment; filename=Surat-${id}.${ext}`,
     );
-    res.setHeader("Content-Type", response.headers["content-type"]);
-    response.data.pipe(res);
+    res.setHeader(
+      "Content-Type",
+      response.headers.get("content-type") || "application/octet-stream",
+    );
+
+    const buffer = await response.arrayBuffer();
+    res.send(Buffer.from(buffer));
   } catch (error) {
     console.error("Error downloadFile:", error);
     res.status(500).json({ message: "Gagal download file" });
