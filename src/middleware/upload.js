@@ -1,65 +1,60 @@
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 const path = require("path");
-const fs = require("fs");
 
-// 👇 FIX TERAKHIR: Tambahkan kata "public/" di depan semua nama foldernya 👇
-/*const uploadDirs = [
-  "public/uploads/surat",
-  "public/uploads/pengaduan",
-  "public/uploads/berita",
-  "public/uploads/temp",
-];
+// Konfigurasi Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
-uploadDirs.forEach((dir) => {
-  const fullPath = path.join(__dirname, "../../", dir);
-  if (!fs.existsSync(fullPath)) {
-    fs.mkdirSync(fullPath, { recursive: true });
-    console.log(`📁 Created directory: ${dir}`);
-  }
-});*/
+// Storage Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => {
+    let folder = "temp";
 
-// Storage configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    let uploadPath = "public/uploads/temp";
-
-    // 👇 Pastikan ini juga mengarah ke "public/" 👇
     if (file.fieldname === "file_surat" || file.fieldname === "file_hasil") {
-      uploadPath = "public/uploads/surat";
+      folder = "surat";
     } else if (
       file.fieldname === "foto_bukti" ||
       file.fieldname === "foto_hasil"
     ) {
-      uploadPath = "public/uploads/pengaduan";
+      folder = "pengaduan";
     } else if (file.fieldname === "foto_berita") {
-      uploadPath = "public/uploads/berita";
+      folder = "berita";
+    } else if (file.fieldname === "file_ktp" || file.fieldname === "file_kk") {
+      folder = "syarat";
     }
 
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
+    const ext = path.extname(file.originalname).toLowerCase();
     const nameWithoutExt = path.basename(file.originalname, ext);
     const sanitizedName = nameWithoutExt.replace(/[^a-zA-Z0-9]/g, "_");
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-    cb(null, `${sanitizedName}-${uniqueSuffix}${ext}`);
+    return {
+      folder: folder,
+      public_id: `${sanitizedName}-${uniqueSuffix}`,
+      resource_type: "auto",
+      format: ext.replace(".", "") || undefined, // ✅ Tambahkan baris ini
+    };
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = {
-    image: ["image/jpeg", "image/jpg", "image/png", "image/gif"],
-    document: [
-      "application/pdf",
-      "application/msword",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ],
-  };
+  const allowedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/gif",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
 
-  const allAllowedTypes = [...allowedTypes.image, ...allowedTypes.document];
-
-  if (allAllowedTypes.includes(file.mimetype)) {
+  if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(
@@ -74,7 +69,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
 const handleUploadError = (err, req, res, next) => {
@@ -93,9 +88,10 @@ const handleUploadError = (err, req, res, next) => {
   }
 
   if (err) {
-    return res
-      .status(400)
-      .json({ success: false, message: err.message || "Error upload file." });
+    return res.status(400).json({
+      success: false,
+      message: err.message || "Error upload file.",
+    });
   }
 
   next();

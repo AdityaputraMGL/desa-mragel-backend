@@ -83,9 +83,13 @@ exports.createPengajuan = async (req, res) => {
 
     // 1. TANGKAP NAMA FILE
     const fileKtp =
-      req.files && req.files["file_ktp"] ? req.files["file_ktp"][0].path : null;
+      req.files?.["file_ktp"]?.[0].path ||
+      req.files?.["file_ktp"]?.[0].secure_url ||
+      null;
     const fileKk =
-      req.files && req.files["file_kk"] ? req.files["file_kk"][0].path : null;
+      req.files?.["file_kk"]?.[0].path ||
+      req.files?.["file_kk"]?.[0].secure_url ||
+      null;
 
     // 2. CARI NAMA SURAT
     const [results] = await sequelize.query(
@@ -453,7 +457,7 @@ exports.updateStatusPengajuan = async (req, res) => {
     }
 
     if (status === "selesai" && uploadedFile) {
-      pengajuan.file_hasil = uploadedFile.path;
+      pengajuan.file_hasil = uploadedFile.path || uploadedFile.secure_url;
     }
     // 👆 SELESAI PENANGKAP FILE 👆
 
