@@ -55,7 +55,12 @@ exports.register = async (req, res) => {
         nama_lengkap,
         tempat_lahir,
         tanggal_lahir,
-        jenis_kelamin,
+        jenis_kelamin:
+          jenis_kelamin === "L"
+            ? "Laki-laki"
+            : jenis_kelamin === "P"
+              ? "Perempuan"
+              : jenis_kelamin,
         alamat_lengkap: alamat
           ? `${alamat} RT ${rt || "0"} RW ${rw || "0"}`
           : "-",
