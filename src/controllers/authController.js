@@ -52,22 +52,16 @@ exports.register = async (req, res) => {
       // Kalau NIK belum ada, kita buatkan data Penduduk baru secara otomatis
       penduduk = await Penduduk.create({
         nik,
-        no_kk: no_kk || "-",
         nama_lengkap,
         tempat_lahir,
         tanggal_lahir,
         jenis_kelamin,
-        alamat,
-        rt,
-        rw,
-        desa: "Mragel",
-        kecamatan: "Sukorame",
-        kabupaten: "Lamongan",
-        provinsi: "Jawa Timur",
+        alamat_lengkap: alamat
+          ? `${alamat} RT ${rt || "0"} RW ${rw || "0"}`
+          : "-",
         agama: req.body.agama || "Islam",
-        status_kawin: req.body.status_kawin || "Belum Kawin",
+        status_perkawinan: req.body.status_kawin || "Belum Kawin",
         pekerjaan: req.body.pekerjaan || "-",
-        pendidikan: req.body.pendidikan || "-",
       });
     }
 
