@@ -1,54 +1,28 @@
 const multer = require("multer");
-const path = require("path");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// 1. Konfigurasi Penyimpanan
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // Simpan di folder public/uploads/syarat
-    cb(null, "public/uploads/syarat");
-  },
-  filename: (req, file, cb) => {
-    // Namai file: TIME-NAMAASLI.ext (Biar gak bentrok)
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
+// Konfigurasi Cloudinary (Pastikan Env sudah diisi di Vercel)
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// Setting Storage Cloudinary
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "balaidesa_syarat", // Folder di dashboard Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png", "pdf", "doc", "docx"],
+    // Khusus PDF/Doc perlu setting raw agar tidak rusak
+    resource_type: "auto",
   },
 });
 
-// 2. Filter File (Gambar + PDF + Word)
-const fileFilter = (req, file, cb) => {
-  // Regex untuk ekstensi file
-  const allowedExts = /jpeg|jpg|png|pdf|doc|docx/;
-  const extname = allowedExts.test(
-    path.extname(file.originalname).toLowerCase(),
-  );
-
-  // Daftar Mime Types yang diizinkan
-  const allowedMimeTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/jpg",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
-
-  const mimetype = allowedMimeTypes.includes(file.mimetype);
-
-  if (extname && mimetype) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        "Hanya boleh upload file Gambar (JPG/PNG), PDF, atau Word (DOC/DOCX)!",
-      ),
-    );
-  }
-};
-
-const upload = multer({
+const uploadSyarat = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // Maksimal naik jadi 5MB per file
-  fileFilter: fileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Maksimal 5MB
 });
 
-module.exports = upload;
+module.exports = uploadSyarat;
