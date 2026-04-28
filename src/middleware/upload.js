@@ -23,7 +23,10 @@ const storage = new CloudinaryStorage({
       file.fieldname === "foto_hasil"
     ) {
       folder = "pengaduan";
-    } else if (file.fieldname === "foto_berita") {
+    } else if (
+      file.fieldname === "foto_berita" ||
+      file.fieldname === "gambar"
+    ) {
       folder = "berita";
     } else if (file.fieldname === "file_ktp" || file.fieldname === "file_kk") {
       folder = "syarat";
