@@ -11,7 +11,7 @@ exports.createPengaduan = async (req, res) => {
     // Cek apakah ada file foto yang diupload
     let foto_bukti = null;
     if (req.file) {
-      foto_bukti = req.file.filename;
+      foto_bukti = req.file.path;
     }
 
     // Simpan ke Database
@@ -142,7 +142,7 @@ exports.updateStatusPengaduan = async (req, res) => {
     // Cek jika ada foto hasil dari admin yang diupload
     let foto_hasil_baru = pengaduan.foto_hasil;
     if (req.file) {
-      foto_hasil_baru = req.file.filename;
+      foto_hasil_baru = req.file.path;
     }
 
     // Update data ke Database
