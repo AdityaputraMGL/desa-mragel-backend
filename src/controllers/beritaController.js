@@ -38,7 +38,7 @@ exports.createBerita = async (req, res) => {
     // Handle Upload Gambar
     let gambar = null;
     if (req.file) {
-      gambar = req.file.filename;
+      gambar = req.file.path;
     }
 
     // Simpan ke Database
@@ -58,12 +58,10 @@ exports.createBerita = async (req, res) => {
     });
   } catch (error) {
     console.error("Error create berita:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Gagal membuat berita: " + error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Gagal membuat berita: " + error.message,
+    });
   }
 };
 
@@ -89,7 +87,7 @@ exports.updateBerita = async (req, res) => {
         );
         if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
       }
-      updateData.gambar = req.file.filename;
+      updateData.gambar = req.file.path;
     }
 
     await berita.update(updateData);
